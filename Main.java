@@ -10,9 +10,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.Scanner;
-
+import java.util.Iterator;
+import java.util.Collection;
+import java.util.NoSuchElementException;
 
 public class Main
 {
@@ -31,6 +36,8 @@ public class Main
 
         if(args.length == 0)
         {
+            Tree<String> tree = new Tree<String>();
+
 			Console console = System.console();
 			if(console == null)
 			{
@@ -40,78 +47,23 @@ public class Main
 
             System.out.print("Log content for " + TEMP_FILE + " (Press ENTER to commit): ");
 			List<String> consoleData = Arrays.asList(console.readLine().split("\\s+"));
+			List<String> loggingData = new ArrayList<String>();
+
 			System.out.print("Reading from console...");
 			System.out.print("Splitting into list...");
 			System.out.print("Writing to " + TEMP_FILE + "...");
-            data.writeFile(TEMP_FILE, consoleData);
-            System.out.print("Reading " + TEMP_FILE + "...");
-            data.readFile(TEMP_FILE);
+        	data.writeFile(TEMP_FILE, consoleData);
+        	System.out.print("Reading " + TEMP_FILE + "...");
+        	data.readFile(TEMP_FILE, loggingData);
+            System.out.print("Instantiating tree...");
+
+            System.out.print("Building tree from logged data...");
+            tree.treeHelper(loggingData);
+            System.out.print("Tree successfully built. Observe menu selection below to continue.\n\n");
+
 /*---------> at this point we break from main and begin using functions
 			 in Tree.java to build our tree. assume tree is build befor
 			 e reaching the lines below this line in Main.java       */
-        }
-
-        if(args.length == 1)
-        {
-            String fileName;
-            String fileAppendExtension = "";
-            fileName = args[0];
-            fileAppendExtension = fileName + EXTENSION;
-            File file = new File(fileAppendExtension);
-            
-			System.out.print("Validating " + fileAppendExtension + "...");
-            data.validateFile(file);
-            System.out.print("Reading " + fileAppendExtension + "...");
-            data.readFile(fileAppendExtension);
-/*---------> at this point we break from main and begin using functions
-			 in Tree.java to build our tree. assume tree is build befor
-			 e reaching the lines below this line in Main.java       */
-        }      
-    }
-
-    final static String TEMP_FILE = "temp.txt";
-    final static String EXTENSION = ".fs19";
-    final static Charset ENCODING = StandardCharsets.UTF_8;
-
-    void writeFile(String fileName, List<String> words) throws IOException
-    {
-        Path path = Paths.get(fileName);
-        try(BufferedWriter writer = Files.newBufferedWriter(path, ENCODING))
-        {
-            for(String word : words)
-            {
-                writer.write(word);
-                writer.newLine();
-            }
-
-            System.out.print(fileName + " data has been written. ");
-        }
-    }
-
-    void readFile(String fileName) throws IOException
-    {
-        Path path = Paths.get(fileName);
-        try(Scanner scanner =  new Scanner(path, ENCODING.name()))
-        {
-            System.out.print("Active data from " + fileName + ":\n\n");
-            
-//---------> instantiate tree object -> Tree<String> bst = new Tree<String>();
-
-/*---------> maybe we don't need this wh
-			 ile loop. alternative: call  
-			 helper function <insert> th
-			 at will build a bst of stri
-			 ngs from given istream. Wil
-			 l loop until EOF, inserting
-			 each element from the strea
-			 m into the tree:
-
-			 	this->insert(element);
-			 						  */			
-            while(scanner.hasNextLine())
-            {
-                log(scanner.nextLine());
-            }
 
 /*---------> at this line we assume tre
 			 e has been built and we ar
@@ -141,6 +93,74 @@ public class Main
 				em, user can select one
 				of the options listed*/
         }
+
+        if(args.length == 1)
+        {
+            Tree<String> tree = new Tree<String>();
+            
+            String fileName;
+            String fileAppendExtension = "";
+
+            fileName = args[0];
+            fileAppendExtension = fileName + EXTENSION;
+            File file = new File(fileAppendExtension);
+            List<String> loggingData = new ArrayList<String>();
+
+			System.out.print("Validating " + fileAppendExtension + "...");
+            data.validateFile(file);
+            System.out.print("Reading " + fileAppendExtension + "...");
+            data.readFile(fileAppendExtension, loggingData);
+            System.out.print("Instantiating tree...");
+
+            System.out.print("Building tree from logged elements...");
+            tree.treeHelper(loggingData);
+            System.out.print("Tree successfully built. Observe menu selection below to continue.\n\n");
+
+            tree.printInorder();
+
+
+        }      
+    }
+
+    final static String TEMP_FILE = "temp.txt";
+    final static String EXTENSION = ".fs19";
+    final static Charset ENCODING = StandardCharsets.UTF_8;
+
+    void writeFile(String fileName, List<String> words) throws IOException
+    {
+        Path path = Paths.get(fileName);
+        try(BufferedWriter writer = Files.newBufferedWriter(path, ENCODING))
+        {
+            for(String word : words)
+            {
+                writer.write(word);
+                writer.newLine();
+            }
+
+            System.out.print(fileName + " data has been written. ");
+            writer.close();
+        }
+    }
+
+    void readFile(String fileName, List<String> logs) throws IOException
+    {
+        Path path = Paths.get(fileName);
+        try(Scanner scanner = new Scanner(path, ENCODING.name()))
+        {   
+            String log;
+            Integer lineNumber = 1;
+            scanner.useDelimiter(" ");
+            boolean hasDuplicate = false;
+            while(scanner.hasNext())
+            {
+                log = scanner.next();
+                logs.add(log);
+                System.out.print("Logging element " + log + " from " +
+                                 " file at line no." + lineNumber + "...");
+                lineNumber = lineNumber + 1;
+            }
+            scanner.close();
+        }
     }
 
     static public void validateFile(File file) throws FileNotFoundException, IOException
@@ -163,11 +183,6 @@ public class Main
         }
 
         System.out.print(file + " validated. ");
-    }
-
-    private static void log(Object msg)
-    {
-        System.out.println(String.valueOf(msg));
     }
 }
 

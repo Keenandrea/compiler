@@ -1,95 +1,191 @@
-import java.lang.NullPointerException;
+import java.util.NoSuchElementException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Tree<AnyType extends Comparable<AnyType>>
-{
-    
+{   
     private Node<AnyType> root;
-	// private int size;
+	private int size;
+
+	public Tree() 
+	{ 
+		size = 0;
+	}
+
+	public void treeHelper(List<AnyType> data)
+    {
+        if(data == null)
+        {
+            throw new IllegalArgumentException("Error: Data cannot be null.");
+        }
+        for(AnyType element : data)
+        {
+            if(element == null)
+            {
+                throw new IllegalArgumentException("Error: Data Element cannot be null.");
+            }
+            buildTree(element);
+        }
+    }
 
     public void buildTree(AnyType data)
     {
-        root = buildTree(root, data);
-		// size = 0;
+		if(data == null)
+		{
+			throw new IllegalArgumentException("Error: Data cannot be null.");
+		}
+		if(root == null)
+		{
+			root = new Node<AnyType>(data);
+		}
+		else
+		{
+        	buildTree(data, root);
+		}
     }
-    private Node<AnyType> buildTree(Node<AnyType> root, AnyType data)
+    private void buildTree(AnyType data, Node<AnyType> root)
     {
-        if(root == null)
-        {
-            return new Node<AnyType>(data);
-        }
-        else if(data.compareTo(root.data) < 0)
+		int comparison = data.compareTo(root.getData());
+        if(comparison > 0) 
 		{
-			root.left = buildTree(root.left, data);
-		}
-        else if(data.compareTo(root.data) > 0)
+            if(root.getRight() == null) 
+			{
+                root.setRight(new Node<AnyType>(data));
+            } 
+			else 
+			{
+                buildTree(data, root.getRight());
+            }
+        } 
+		else if(comparison < 0) 
 		{
-			root.right = buildTree(root.right, data);
-		}
-        else
-        {
-			System.out.print("Warning: Build attempted to insert " +
-							 "duplicate " + data + ". Bypassed...");
+            if(root.getLeft() == null) 
+			{
+                root.setLeft(new Node<AnyType>(data));
+            } 
+			else 
+			{
+                buildTree(data, root.getLeft());
+            }
         }
-        return root;
     }
 
-    public void printInorder()
-	{
-		System.out.print("In-order Traversal:");
-		printInorder(root);
-		System.out.println();
-	}
-	private void printInorder(Node<AnyType> root)
-	{
-		if(root == null)
+    public List<AnyType> printPreorder() {
+        ArrayList<AnyType> list = new ArrayList<AnyType>();
+        if(root != null) {
+            list.add(root.getData());
+            printPreorder(list, root);
+        }
+        return list;
+    }
+    public void printPreorder(List<AnyType> list, Node<AnyType> root) {
+        if(root.getLeft() != null) {
+            list.add(root.getLeft().getData());
+            printPreorder(list, root.getLeft());
+        }
+        if(root.getRight() != null) 
 		{
-			throw new NullPointerException("Error: Parameter 'root' was null " +
-										   "inside function 'printInorder'.");
-		}
+            list.add(root.getRight().getData());
+            printPreorder(list, root.getRight());
+        }
+    }
 
-		printInorder(root.left);
-		System.out.print(" " + root.data);
-		printInorder(root.right);
-	}
-
-    public void printPreorder()
-	{
-		System.out.print("Pre-order Traversal:");
-		printPreorder(root);
-		System.out.println();
-	}
-	private void printPreorder(Node<AnyType> root)
-	{
-		if(root == null)
+    public List<AnyType> printPostorder() {
+        ArrayList<AnyType> list = new ArrayList<AnyType>();
+        if(root != null) 
 		{
-			throw new NullPointerException("Error: Parameter 'root' was null " +
-										   "inside function 'printPreorder'.");
-		}
-
-		System.out.print(" " + root.data);
-		printPreorder(root.left);
-		printPreorder(root.right);
-	}
-
-    public void printPostorder()
-	{
-		System.out.print("Post-order Traversal:");
-		printPostorder(root);
-		System.out.println();
-	}
-
-	private void printPostorder(Node<AnyType> root)
-	{
-		if(root == null)
+            printPostorder(list, root);
+        }
+        return list;
+    }
+    public void printPostorder(List<AnyType> list, Node<AnyType> root) {
+        if(root.getLeft() != null) 
 		{
-			throw new NullPointerException("Error: Parameter 'root' was null " +
-										   "inside function 'printPostorder'.");
-		}
+            printPostorder(list, root.getLeft());
+        }
+        if(root.getRight() != null) 
+		{
+            printPostorder(list, root.getRight());
+        }
+        list.add(root.getData());
+    }
 
-		printPostorder(root.left);
-		printPostorder(root.right);
-		System.out.print(" " + root.data);
-	}
+    public List<AnyType> printInorder() {
+        ArrayList<AnyType> list = new ArrayList<AnyType>();
+        if(root != null) {
+            printInorder(list, root);
+        }
+        return list;
+    }
+    private void printInorder(List<AnyType> list, Node<AnyType> root) {
+        if(root.getLeft() != null) 
+		{
+            printInorder(list, root.getLeft());
+        }
+        list.add(root.getData());
+        if(root.getRight() != null) 
+		{
+            printInorder(list, root.getRight());
+        }
+    }
+
+    // public void printInorder()
+	// {
+	// 	System.out.print("In-order Traversal: ");
+	// 	printInorder(root);
+	// 	System.out.println();
+	// }
+	// private void printInorder(Node<AnyType> root)
+	// {
+	// 	if(root == null)
+	// 	{
+	// 		throw new NullPointerException("Error: Parameter 'root' was null " +
+	// 									   "inside function 'printInorder'.");
+	// 	}
+
+	// 	printInorder(root.left);
+	// 	System.out.print(" " + root.data);
+	// 	printInorder(root.right);
+	// }
+
+    // public void printPreorder()
+	// {
+	// 	System.out.print("Pre-order Traversal: ");
+	// 	printPreorder(root);
+	// 	System.out.println();
+	// }
+	// private void printPreorder(Node<AnyType> root)
+	// {
+	// 	if(root == null)
+	// 	{
+	// 		throw new NullPointerException("Error: Parameter 'root' was null " +
+	// 									   "inside function 'printPreorder'.");
+	// 	}
+
+	// 	System.out.print(" " + root.data);
+	// 	printPreorder(root.left);
+	// 	printPreorder(root.right);
+	// }
+
+    // public void printPostorder()
+	// {
+	// 	System.out.print("Post-order Traversal: ");
+	// 	printPostorder(root);
+	// 	System.out.println();
+	// }
+
+	// private void printPostorder(Node<AnyType> root)
+	// {
+	// 	if(root == null)
+	// 	{
+	// 		throw new NullPointerException("Error: Parameter 'root' was null " +
+	// 									   "inside function 'printPostorder'.");
+	// 	}
+
+	// 	printPostorder(root.left);
+	// 	printPostorder(root.right);
+	// 	System.out.print(" " + root.data);
+	// }
 
 	// Helper method for the spacing.
     // private String printSpaces(int level) {
