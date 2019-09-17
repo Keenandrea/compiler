@@ -59,39 +59,11 @@ public class Main
 
             System.out.print("Building tree from logged data...");
             tree.treeHelper(loggingData);
-            System.out.print("Tree successfully built. Observe menu selection below to continue.\n\n");
+            System.out.print("Tree successfully built.\n\n");
 
-/*---------> at this point we break from main and begin using functions
-			 in Tree.java to build our tree. assume tree is build befor
-			 e reaching the lines below this line in Main.java       */
+            System.out.print("Working on tree traversals...");
+            data.printTraversalFile(tree, TEMP_FILE);
 
-/*---------> at this line we assume tre
-			 e has been built and we ar
-			 e ready for traversals:
-
-				bst.printInorder();
-				bst.printPreorder();
-				bst.printPostorder();
-
-			Footnote: consider clearing
-			the screen and pulling a us
-			er menu to screen.
-
-				switch 1, 2, 3
-				1: print inorder traver
-				   sal to screen
-				2:  ''  ''   ''  ''  '' 
-				3:  ''  ''   ''  ''  ''
-				Q: to quit -> Yes (y/N) 
-				Confirm the user that t
-				he traversals have alre
-				ady been saved to their 
-				files, however, if user
-				wishes to see the resul
-				ting content in those f
-				iles without opening th
-				em, user can select one
-				of the options listed*/
         }
 
         if(args.length == 1)
@@ -114,9 +86,20 @@ public class Main
 
             System.out.print("Building tree from logged elements...");
             tree.treeHelper(loggingData);
-            System.out.print("Tree successfully built. Observe menu selection below to continue.\n\n");
+            System.out.print("Tree successfully built.\n\n");
 
-            tree.printInorder();
+            System.out.print("Working on tree traversals...");
+            data.printTraversalFile(tree, fileAppendExtension);
+
+
+
+
+            // System.out.println("INORDER:");
+            // tree.printInorder();
+            // System.out.print("");
+            // tree.printPreorder();
+            // System.out.println("POSTORDER:");
+            // tree.printPostorder();
 
 
         }      
@@ -124,6 +107,9 @@ public class Main
 
     final static String TEMP_FILE = "temp.txt";
     final static String EXTENSION = ".fs19";
+    final static String PREORDER_EXTENSION = ".preorder";
+    final static String POSTORDER_EXTENSION = ".postorder";
+    final static String INORDER_EXTENSION = ".inorder";
     final static Charset ENCODING = StandardCharsets.UTF_8;
 
     void writeFile(String fileName, List<String> words) throws IOException
@@ -147,20 +133,36 @@ public class Main
         Path path = Paths.get(fileName);
         try(Scanner scanner = new Scanner(path, ENCODING.name()))
         {   
-            String log;
-            Integer lineNumber = 1;
+            String logString;
+            String logChar;
+
             scanner.useDelimiter(" ");
-            boolean hasDuplicate = false;
             while(scanner.hasNext())
             {
-                log = scanner.next();
-                logs.add(log);
-                System.out.print("Logging element " + log + " from " +
-                                 " file at line no." + lineNumber + "...");
-                lineNumber = lineNumber + 1;
+                logString = scanner.next();
+                logChar = logString.substring(0,1);
+                logs.add(logChar);
             }
             scanner.close();
         }
+    }
+
+    void printTraversalFile(Tree<String> tree, String fileName) throws IOException
+    {
+        String filePreOrderExtension = "";
+        String filePostOrderExtension = "";
+        String fileInOrderExtension = "";
+
+        String newFile = fileName.substring(0, fileName.lastIndexOf('.'));
+        filePreOrderExtension = newFile + PREORDER_EXTENSION;
+        filePostOrderExtension = newFile + POSTORDER_EXTENSION;
+        fileInOrderExtension = newFile + INORDER_EXTENSION;
+
+        tree.printHelper(filePreOrderExtension);
+        // tree.printHelper(filePostOrderExtension);
+        // tree.printHelper(fileInOrderExtension);
+
+
     }
 
     static public void validateFile(File file) throws FileNotFoundException, IOException
@@ -185,23 +187,3 @@ public class Main
         System.out.print(file + " validated. ");
     }
 }
-
-// import java.util.Random;
-
-// public class Main
-// {
-// 	public static void main(String... args)
-// 	{
-// 		Tree<Integer> bst = new Tree<Integer>();
-// 		for (int i = 0; i < 5; i++)
-// 		{
-// 			// int r = (int)(Math.random() * 100) + 1;
-// 			int r = 10;
-// 			System.out.println("Inserting " + r + "...");
-// 			bst.buildTree(r);
-// 		}
-// 		bst.printInorder();
-// 		bst.printPreorder();
-// 		bst.printPostorder();
-// 	}
-// }
