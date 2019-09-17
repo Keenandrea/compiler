@@ -1,9 +1,17 @@
 import java.util.NoSuchElementException;
 import java.util.ArrayList;
 import java.util.List;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 public class Tree<AnyType extends Comparable<AnyType>>
 {   
+    final static Charset ENCODING = StandardCharsets.UTF_8;
     private Node<AnyType> root;
 	private int size;
 
@@ -70,6 +78,27 @@ public class Tree<AnyType extends Comparable<AnyType>>
         }
     }
 
+    public void printHelper(String fileName) throws IOException
+    { 
+        List<AnyType> treeDataList = new ArrayList<AnyType>();
+        Path path = Paths.get(fileName);
+        try(BufferedWriter writer = Files.newBufferedWriter(path, ENCODING))
+        {
+            System.out.print("Writing traversal data to file " + fileName + "...");
+            treeDataList = printPreorder();
+            
+            Object[] treeDataArr = treeDataList.toArray();
+            // for(AnyType treeData : treeDataList)
+            // {
+            //     writer.write(treeData);
+            //     writer.newLine();
+            // }
+            
+            // CHARARRAYWRITER
+            // writer.close();
+        }
+    }
+
     public List<AnyType> printPreorder() {
         ArrayList<AnyType> list = new ArrayList<AnyType>();
         if(root != null) {
@@ -90,102 +119,74 @@ public class Tree<AnyType extends Comparable<AnyType>>
         }
     }
 
-    public List<AnyType> printPostorder() {
-        ArrayList<AnyType> list = new ArrayList<AnyType>();
-        if(root != null) 
-		{
-            printPostorder(list, root);
-        }
-        return list;
-    }
-    public void printPostorder(List<AnyType> list, Node<AnyType> root) {
-        if(root.getLeft() != null) 
-		{
-            printPostorder(list, root.getLeft());
-        }
-        if(root.getRight() != null) 
-		{
-            printPostorder(list, root.getRight());
-        }
-        list.add(root.getData());
-    }
-
-    public List<AnyType> printInorder() {
-        ArrayList<AnyType> list = new ArrayList<AnyType>();
-        if(root != null) {
-            printInorder(list, root);
-        }
-        return list;
-    }
-    private void printInorder(List<AnyType> list, Node<AnyType> root) {
-        if(root.getLeft() != null) 
-		{
-            printInorder(list, root.getLeft());
-        }
-        list.add(root.getData());
-        if(root.getRight() != null) 
-		{
-            printInorder(list, root.getRight());
-        }
-    }
-
-    // public void printInorder()
-	// {
-	// 	System.out.print("In-order Traversal: ");
-	// 	printInorder(root);
-	// 	System.out.println();
-	// }
-	// private void printInorder(Node<AnyType> root)
-	// {
-	// 	if(root == null)
+    // public List<AnyType> printPostorder() {
+    //     ArrayList<AnyType> list = new ArrayList<AnyType>();
+    //     if(root != null) 
 	// 	{
-	// 		throw new NullPointerException("Error: Parameter 'root' was null " +
-	// 									   "inside function 'printInorder'.");
-	// 	}
-
-	// 	printInorder(root.left);
-	// 	System.out.print(" " + root.data);
-	// 	printInorder(root.right);
-	// }
-
-    // public void printPreorder()
-	// {
-	// 	System.out.print("Pre-order Traversal: ");
-	// 	printPreorder(root);
-	// 	System.out.println();
-	// }
-	// private void printPreorder(Node<AnyType> root)
-	// {
-	// 	if(root == null)
+    //         printPostorder(list, root);
+    //     }
+    //     return list;
+    // }
+    // public void printPostorder(List<AnyType> list, Node<AnyType> root) {
+    //     if(root.getLeft() != null) 
 	// 	{
-	// 		throw new NullPointerException("Error: Parameter 'root' was null " +
-	// 									   "inside function 'printPreorder'.");
-	// 	}
-
-	// 	System.out.print(" " + root.data);
-	// 	printPreorder(root.left);
-	// 	printPreorder(root.right);
-	// }
-
-    // public void printPostorder()
-	// {
-	// 	System.out.print("Post-order Traversal: ");
-	// 	printPostorder(root);
-	// 	System.out.println();
-	// }
-
-	// private void printPostorder(Node<AnyType> root)
-	// {
-	// 	if(root == null)
+    //         printPostorder(list, root.getLeft());
+    //         System.out.println(list);
+    //     }
+    //     if(root.getRight() != null) 
 	// 	{
-	// 		throw new NullPointerException("Error: Parameter 'root' was null " +
-	// 									   "inside function 'printPostorder'.");
-	// 	}
+    //         printPostorder(list, root.getRight());
+    //         System.out.println(list);
+    //     }
+    //     list.add(root.getData());
+    // }
 
-	// 	printPostorder(root.left);
-	// 	printPostorder(root.right);
-	// 	System.out.print(" " + root.data);
-	// }
+    // public List<AnyType> printInorder() {
+    //     ArrayList<AnyType> list = new ArrayList<AnyType>();
+    //     if(root != null) {
+    //         printInorder(list, root);
+    //     }
+    //     return list;
+    // }
+    // private void printInorder(List<AnyType> list, Node<AnyType> root) {
+    //     if(root.getLeft() != null) 
+	// 	{
+    //         printInorder(list, root.getLeft());
+    //         System.out.println(list);
+    //     }
+    //     list.add(root.getData());
+    //     if(root.getRight() != null) 
+	// 	{
+    //         printInorder(list, root.getRight());
+    //         System.out.println(list);
+    //     }
+    // }
+
+    public int depth(AnyType data) {
+        if(data == null) {
+            throw new IllegalArgumentException("Data cannot be null");
+        }
+        return findDepth(data, root, 1);
+    }
+
+    private int findDepth(AnyType data, Node<AnyType> currentNode, int currentNodeDepth) {
+        int comparison = data.compareTo(currentNode.getData());
+        if(comparison > 0) {
+            if(currentNode.getRight() == null) {
+                return -1;
+            } else {
+                return findDepth(data, currentNode.getRight(), currentNodeDepth + 1);
+            }
+        } else if(comparison < 0) {
+            if(currentNode.getLeft() == null) {
+                return -1;
+            } else {
+                return findDepth(data, currentNode.getLeft(), currentNodeDepth + 1);
+            }
+        } else {
+            return currentNodeDepth;
+        }
+    }
 
 	// Helper method for the spacing.
     // private String printSpaces(int level) {
