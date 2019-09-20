@@ -82,22 +82,25 @@ public class Tree<AnyType extends Comparable<AnyType>>
         }
     }
 
-    public void printFstChar(String fileName, String[] treeDataStr, String[] nodeDepthStr) throws IOException
+    public void printFstChar(String fileName, String[] treeDataStr, Integer[] nodeDepthInt) throws IOException
     {
+        String indent = " ";
         Path path = Paths.get(fileName);
         try(BufferedWriter writer = Files.newBufferedWriter(path, ENCODING))
         {
-            for(String printData : treeDataStr)
+            for(int i = 0; i < treeDataStr.length; i++)
             {
-                writer.write(printData);
+                for(int j = 0; j < nodeDepthInt[i]; j++)
+                {
+                    writer.write(indent);
+                }
+                writer.write(treeDataStr[i]);
+
+                
                 writer.newLine();
             }
 
-            for(String printData : nodeDepthStr)
-            {
-                writer.write(printData);
-                writer.newLine();
-            }
+
             writer.close();
         }
     }
@@ -119,16 +122,10 @@ public class Tree<AnyType extends Comparable<AnyType>>
         {
 			nodeDepthIntArr[i] = (Integer)nodeDepthObj[i];
         }
-
-        String nodeDepthStr[] = new String[nodeDepthIntArr.length];
-		for (int i = 0; i < nodeDepthIntArr.length; i++)
-        {
-			nodeDepthStr[i] = String.valueOf(nodeDepthIntArr[i]);
-        }
         
         try     
         {
-            printFstChar(fileName, treeDataStr, nodeDepthStr);        
+            printFstChar(fileName, treeDataStr, nodeDepthIntArr);        
         }
         catch(IOException e) 
         {
@@ -139,11 +136,14 @@ public class Tree<AnyType extends Comparable<AnyType>>
     public void printHelperPreorder(String fileName)
     { 
         List<AnyType> treeDataList = new ArrayList<AnyType>();
+        
         System.out.print("\nWriting traversal data to file " + fileName + "...");
         treeDataList = printPreorder();
+        
         System.out.println("Printing preorder traversal to file " + fileName + "...");     
         printIndent(fileName, treeDataList);
     }
+
     public List<AnyType> printPreorder() {
         ArrayList<AnyType> list = new ArrayList<AnyType>();
         if(root != null) 
@@ -153,6 +153,7 @@ public class Tree<AnyType extends Comparable<AnyType>>
         }
         return list;
     }
+
     public void printPreorder(List<AnyType> list, Node<AnyType> root) {
         if(root.getLeft() != null) 
         {

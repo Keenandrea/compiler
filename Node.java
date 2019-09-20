@@ -1,7 +1,5 @@
 public class Node<AnyType extends Comparable<AnyType>>
 {
-    char fstChar;
-    int nodeLevel;
     public AnyType data;
     public Node<AnyType> left; 
     public Node<AnyType> right;
@@ -33,9 +31,5 @@ public class Node<AnyType extends Comparable<AnyType>>
     public void setRight(Node<AnyType> right) 
     {
         this.right = right;
-    }
-    public String toString()
-    {
-        return data.toString();
     }
 }

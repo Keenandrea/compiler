@@ -145,8 +145,9 @@ public class Main
             while(scanner.hasNextLine())
             {
                 logStr = scanner.nextLine();
-                logChar = logStr.substring(0,1);
-                logs.add(logChar);
+
+                // logChar = logStr.substring(0,1);
+                logs.add(logStr);
             }
             scanner.close();
         }
@@ -164,8 +165,8 @@ public class Main
             while(scanner.hasNext())
             {
                 logStr = scanner.next();
-                logChar = logStr.substring(0,1);
-                logs.add(logChar);
+                // logChar = logStr.substring(0,1);
+                logs.add(logStr);
             }
             scanner.close();
         }
